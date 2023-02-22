@@ -6,19 +6,17 @@ class Pool extends Component {
         super(props);
     }
   render() {
-    // console.log(this.props.processes);
-    console.log(this.props.processes.forEach(element => element));
+    let g = [1, 4, 5];
+    // console.log(g);
+    // // let h = g.map(element => <p>{element}</p>)
+
+    // console.log(this.props.processes.map(element => <p>{element}</p>));
     return (
       <div>
         <h4 className='pool_head'>{this.props.name}</h4>
         <div className='pool_body'>
             <p>hello</p>
-            {this.props.processes.forEach(element => {
-                <div>
-                <Process pid={element} />
-                <p>Eswar</p>
-                </div>
-            })}
+            {this.props.processes.map(element => <Process pid={element} />)}
         </div>
       </div>
     )
