@@ -25,7 +25,7 @@ const getRandomElement = (l: any[]): any => {
 
 const create_process = (id: number): Process => {
     const ticks: number = getRandomInt(3, 6);
-    let io = {
+    let io: IOTime | null = {
         "start_time": getRandomInt(1, ticks - 1),
         "ticks": getRandomInt(1, 3)
     }
