@@ -299,6 +299,7 @@ class UI {
     button.classList.add("mdl-button--colored");
     button.innerText = title.innerText;
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -348,6 +349,7 @@ class UI {
     
     button.innerText = title.innerText;
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -547,6 +549,7 @@ class UI {
     button.classList.add("mdl-button");
     button.innerText = `Wrong Moves: ${this.kernel.wrongMoves}    📊`;
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -642,6 +645,7 @@ class UI {
     if(!this.isPractice()) return;
     button.innerText = `Average Event Wait time: ${this.kernel.getAverageWaitTime()}    📊`;
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -802,6 +806,7 @@ class UI {
     // button.classList.add("mdl-button--colored");
     button.innerText = `Cumulative CPU Idle time: ${this.kernel.cpuIdle}     📊`;
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -963,6 +968,7 @@ class UI {
     // button.classList.add("mdl-button--colored");
     button.innerText = `Cumulative IO Idle time: ${this.kernel.getCPUIOWaitTime()}      📊`;
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -1013,6 +1019,7 @@ class UI {
     
     button.innerText = title.innerText;
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -1055,6 +1062,7 @@ class UI {
     button.classList.add("mdl-button--colored");
     button.innerText = 'Objective';
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -1096,6 +1104,7 @@ class UI {
     button.classList.add("mdl-button--colored");
     button.innerText = 'Intuition';
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -1138,6 +1147,7 @@ class UI {
     button.classList.add("mdl-button--colored");
     button.innerText = 'Apparatus';
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -1184,6 +1194,7 @@ class UI {
     button.classList.add("mdl-button--colored");
     button.innerText = title.innerText;
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -1228,6 +1239,7 @@ class UI {
     button.classList.add("mdl-button--colored");
     button.innerText = title.innerText;
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -1273,6 +1285,7 @@ class UI {
     button.classList.add("mdl-button--colored");
     button.innerText = title.innerText;
     button.addEventListener("click", () => {
+        this.pause_exp();
         dialog.showModal();
     }
     );
@@ -1685,6 +1698,14 @@ class UI {
     });
   }
 
+  pause_exp(){
+    this.end_timer();
+    document.getElementById("start").childNodes[0].nodeValue = "Resume";
+    this.display_clock();
+    // this.display_all();
+    // this.end_timer();
+  }
+
   initialize_accordion() {
     if(this.isPractice()){
       let log = <HTMLElement>document.getElementById("observations_button");
@@ -1702,10 +1723,7 @@ class UI {
       accordion[i].addEventListener("click", () => {
         accordion[i].classList.toggle("active");
         if(accordion[i].classList.contains("active") && !this.is_ex_paused()){
-          this.end_timer();
-          document.getElementById("start").childNodes[0].nodeValue = "Resume";
-          this.display_all();
-          this.end_timer();
+          this.pause_exp();
         }
         let panel = <HTMLElement>accordion[i].nextElementSibling;
         if (panel.style.maxHeight) {
