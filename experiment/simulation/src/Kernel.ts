@@ -179,8 +179,10 @@ export class Kernel  {
     }
 
     generate_event() {
-        this.generate_external_event();
-        this.generate_internal_event();
+        if(this.clock % 2 === 1){
+            this.generate_external_event();
+            this.generate_internal_event();
+        }
     }
 
     createProcess(): IResponce {
