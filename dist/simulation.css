@@ -451,7 +451,7 @@ html, body, main {
 
 .controls {
     display: inline-block;
-    height: 20%;
+    height: 15%;
     width: 100%;
     /* background-color: #0A66C2; */
     display: flex;
