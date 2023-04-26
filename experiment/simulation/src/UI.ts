@@ -512,7 +512,7 @@ class UI {
     );
     myChart.update();
     myChart.data.datasets[0].pointRadius = myChart.data.datasets[0].data.map(
-      (val) => (val === 1 ? 7 : (val === 0 ? 4 : 7))
+      (val) => (val === 1 ? 7 : (val === 0 ? 2 : 7))
     );
     myChart.update();
     content.appendChild(lineChart);
@@ -563,12 +563,12 @@ class UI {
     let dialog = document.createElement("dialog");
     dialog.classList.add("mdl-dialog");
     // increase size of the dialog box
-    dialog.style.width = "650px";
+    dialog.style.width = "780px";
     dialog.style.height = "520px";
 
     let title = document.createElement("h5");
     title.classList.add("mdl-dialog__title");
-    title.innerText = "Average Event Wait Time vs Time";
+    title.innerText = "Average Event Wait Time vs Clock Time";
     title.style.width = "100%";
     title.style.height = "50px";
     let content = document.createElement("div");
@@ -576,7 +576,7 @@ class UI {
 
     let lineChart = document.createElement("canvas");
     lineChart.id = "lineChart";
-    lineChart.width = 350;
+    lineChart.width = 500;
     lineChart.height = 350;
     let ctx = lineChart.getContext("2d");
     let myChart = new Chart(ctx, {
@@ -590,6 +590,7 @@ class UI {
             backgroundColor: ["rgba(255, 99, 132, 0.2)"],
             borderColor: ["rgba(255, 99, 132, 1)"],
             borderWidth: 1,
+            pointRadius: 4,
           },
         ],
       },
@@ -655,12 +656,12 @@ class UI {
     let dialog = document.createElement("dialog");
     dialog.classList.add("mdl-dialog");
     // increase size of the dialog box
-    dialog.style.width = "680px";
+    dialog.style.width = "780px";
     dialog.style.height = "520px";
 
     let title = document.createElement("h6");
     title.classList.add("mdl-dialog__title");
-    title.innerText = "Cumulative CPU Idle Time vs Time";
+    title.innerText = "Cumulative CPU Idle Time vs Clock Time";
     title.style.width = "100%";
     title.style.height = "50px";
     let content = document.createElement("div");
@@ -668,35 +669,103 @@ class UI {
 
     let lineChart = document.createElement("canvas");
     lineChart.id = "lineChart";
-    lineChart.width = 350;
+    lineChart.width = 500;
     lineChart.height = 350;
     let ctx = lineChart.getContext("2d");
+
+    let idle = []
+    for (let i = 0; i < this.kernel.clock; i++) {
+      // push values from cummCPUIdle list to io
+      idle.push(this.kernel.cummCPUIdle[i]);
+    }
+
+    // console.log(idle)
+
     let myChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: Array.from(this.kernel.cummCPUIdle.keys()).map((val) => val + 1),
+        labels: Array.from(this.kernel.IDLE.keys()).map((val) => val + 1),
         datasets: [
           {
             label: "Cumulative CPU Idle Time",
-            data: this.kernel.cummCPUIdle,
-            backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-            borderColor: ["rgba(255, 99, 132, 1)"],
-            borderWidth: 1,
+            data: this.kernel.IDLE,
+            backgroundColor: "rgba(0,0,0,0)",
+            borderColor: "gray",
+            borderWidth: 2,
+            pointRadius: 5,
+            steppedLine: true,
           },
         ],
       },
       options: {
-        // graph size
         responsive: false,
         maintainAspectRatio: false,
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            generateLabels: function() {
+              const legendLabels = [];
+              legendLabels.push({
+                text: "CPU Idle",
+                fillStyle: "rgba(54, 162, 235, 1)",
+                strokeStyle: "rgba(54, 162, 235, 1)",
+                lineWidth: 2,
+                pointStyle: 'circle',
+                hidden: false
+              });
 
-        scales: {
-          y: {
-            beginAtZero: true,
+              legendLabels.push({
+                text: "CPU Engaged",
+                fillStyle: "rgba(255, 99, 132, 1)",
+                strokeStyle: "rgba(255, 99, 132, 1)",
+                lineWidth: 2,
+                pointStyle: 'circle',
+                hidden: false
+              });
+              return legendLabels;
+            }
           },
+        },
+        tooltips: {
+          enabled: true,
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: function(tooltipItem, data) {
+              var value = idle[tooltipItem.index];
+              return `Cumulative CPU Idle time : ` + (value);
+            }
+          }
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: 1,
+              stepSize: 1,
+              callback: function(value, index, values) {
+                if (value === 0) {
+                  return "CPU Engaged";
+                } else if(value == 1)
+                {
+                  return "CPU Idle";
+                }
+                else {
+                  return "";
+                }
+              }
+            }
+          }]
         },
       },
     });
+
+    myChart.data.datasets[0].pointBackgroundColor = myChart.data.datasets[0].data.map(
+      (val) => (val === 1 ? "rgba(54, 162, 235, 1)" : "rgba(255, 99, 132, 1)")
+    );
+    myChart.update();
     content.appendChild(lineChart);
     
     let actions = document.createElement("div");
@@ -749,12 +818,12 @@ class UI {
     let dialog = document.createElement("dialog");
     dialog.classList.add("mdl-dialog");
     // increase size of the dialog box
-    dialog.style.width = "650px";
+    dialog.style.width = "780px";
     dialog.style.height = "520px";
 
     let title = document.createElement("h6");
     title.classList.add("mdl-dialog__title");
-    title.innerText = "Cumulative CPU IO Idle Time vs Time";
+    title.innerText = "Cumulative IO Idle Time vs Clock Time";
     title.style.width = "100%";
     title.style.height = "50px";
     let content = document.createElement("div");
@@ -762,35 +831,101 @@ class UI {
 
     let lineChart = document.createElement("canvas");
     lineChart.id = "lineChart";
-    lineChart.width = 350;
+    lineChart.width = 500;
     lineChart.height = 350;
     let ctx = lineChart.getContext("2d");
+
+    let io = []
+    for (let i = 0; i < this.kernel.clock; i++) {
+      // push values from cummCPUIOWaitTime list to io
+      io.push(this.kernel.cummCPUIOWaitTime[i]);
+    }
+
     let myChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: Array.from(this.kernel.cummCPUIOWaitTime.keys()).map((val) => val + 1),
+        labels: Array.from(this.kernel.CPUIO.keys()).map((val) => val + 1),
         datasets: [
           {
-            label: "Cumulative CPU IO Time",
-            data: this.kernel.cummCPUIOWaitTime,
-            backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-            borderColor: ["rgba(255, 99, 132, 1)"],
-            borderWidth: 1,
+            label: "Cumulative IO Time",
+            data: this.kernel.CPUIO,
+            backgroundColor: "rgba(0,0,0,0)",
+            borderColor: "gray",
+            borderWidth: 2,
+            pointRadius: 5,
+            steppedLine: true,
           },
         ],
       },
+      tooltips: {
+        enabled: true,
+        mode: 'index',
+        intersect: false,
+        callbacks: {
+          label: function(tooltipItem, data) {
+            var value = io[tooltipItem.index];
+            return `Cumulative IO Idle time : ` + (value);
+          }
+        }
+      },
       options: {
-        // graph size
         responsive: false,
         maintainAspectRatio: false,
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            generateLabels: function() {
+              const legendLabels = [];
+              legendLabels.push({
+                text: "IO Idle",
+                fillStyle: "rgba(54, 162, 235, 1)",
+                strokeStyle: "rgba(54, 162, 235, 1)",
+                lineWidth: 2,
+                pointStyle: 'circle',
+                hidden: false
+              });
 
-        scales: {
-          y: {
-            beginAtZero: true,
+              legendLabels.push({
+                text: "IO Engaged",
+                fillStyle: "rgba(255, 99, 132, 1)",
+                strokeStyle: "rgba(255, 99, 132, 1)",
+                lineWidth: 2,
+                pointStyle: 'circle',
+                hidden: false
+              });
+              return legendLabels;
+            }
           },
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: 1,
+              stepSize: 1,
+              callback: function(value, index, values) {
+                if (value === 0) {
+                  return "IO Engaged";
+                } else if(value == 1)
+                {
+                  return "IO Idle";
+                }
+                else {
+                  return "";
+                }
+              }
+            }
+          }]
         },
       },
     });
+
+    myChart.data.datasets[0].pointBackgroundColor = myChart.data.datasets[0].data.map(
+      (val) => (val === 1 ? "rgba(54, 162, 235, 1)" : "rgba(255, 99, 132, 1)")
+    );
+    myChart.update();
     content.appendChild(lineChart);
     
     let actions = document.createElement("div");
@@ -826,7 +961,7 @@ class UI {
     // button.classList.add("mdl-js-button");
     // button.classList.add("mdl-button--raised");
     // button.classList.add("mdl-button--colored");
-    button.innerText = `Cumulative CPU IO Idle time: ${this.kernel.getCPUIOWaitTime()}      📊`;
+    button.innerText = `Cumulative IO Idle time: ${this.kernel.getCPUIOWaitTime()}      📊`;
     button.addEventListener("click", () => {
         dialog.showModal();
     }

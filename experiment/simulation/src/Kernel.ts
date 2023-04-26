@@ -29,6 +29,8 @@ export interface IKernel {
     cpuIdle: number;
     cummAvgEvntWaitTime : number [];
     cummCPUIOWaitTime : number [];
+    CPUIO : number []; // CPU IO Idle
+    IDLE : number []; // CPU Idle
     cummCPUIdle : number [];
     cummWrongMoves : number [];
     moves: Move [];
@@ -52,6 +54,8 @@ export class Kernel  {
     cpuIdle: number;
     cummAvgEvntWaitTime : number [];
     cummCPUIOWaitTime : number [];
+    CPUIO : number [];
+    IDLE : number [];
     cummCPUIdle : number [];
     cummWrongMoves : number [];
     moves: Move [];
@@ -86,6 +90,8 @@ export class Kernel  {
         this.cpuIdle = 0;
         this.cummAvgEvntWaitTime = [];
         this.cummCPUIOWaitTime = [];
+        this.CPUIO = [];
+        this.IDLE = [];
         this.cummCPUIdle = [];
         this.cummWrongMoves = [];
         this.moves = [];
@@ -240,6 +246,18 @@ export class Kernel  {
         return idle;
     }
 
+    isIOIdle() {
+        let ioidle = true;
+        for (let index = 0; index < this.processes.length; index++) {
+            const element = this.processes[index];
+            if(element.state === config.BLOCKED){
+                ioidle = false;
+                break;
+            }
+        }
+        return ioidle;
+    }
+
     advanceClock(isUser: Boolean = true): IResponce {
         // if(this.selectedEvent !== -1){
         //     return {
@@ -250,7 +268,17 @@ export class Kernel  {
         // this.clock++;
         // console.log("Hello World");
         if(this.isCPUIdle()) {
+            this.IDLE.push(1);
             this.cpuIdle += 1;
+        }
+        else{
+            this.IDLE.push(0);
+        }
+        if(this.isIOIdle()) {
+            this.CPUIO.push(1);
+        }
+        else{
+            this.CPUIO.push(0);
         }
         this.clock = this.clock + 1;
         this.generate_event();
@@ -543,11 +571,11 @@ export class Kernel  {
             log: {"records" :this.log.records}, selectedEvent: this.selectedEvent, 
             wrongMoves: this.wrongMoves, cpuIdle: this.cpuIdle,     cummAvgEvntWaitTime : this.cummAvgEvntWaitTime,
             cummCPUIOWaitTime: this.cummCPUIOWaitTime, cummCPUIdle : this.cummCPUIdle, cummWrongMoves : this.cummWrongMoves, 
-            moves: this.moves};
+            moves: this.moves, CPUIO:this.CPUIO, IDLE: this.IDLE};
     }
     setData(data: IKernel) {
         const {processes, currentProcess, processCreations, clock, events, log, wrongMoves, cpuIdle, 
-            cummAvgEvntWaitTime, cummCPUIOWaitTime, cummCPUIdle, cummWrongMoves, moves} = data;
+            cummAvgEvntWaitTime, cummCPUIOWaitTime, cummCPUIdle, cummWrongMoves, moves, CPUIO, IDLE} = data;
 
         this.processes = [];
         for (let index = 0; index < processes.length; index++) {
@@ -575,6 +603,8 @@ export class Kernel  {
         this.cummCPUIOWaitTime = cummCPUIOWaitTime === undefined? []: cummCPUIOWaitTime;
         this.cummCPUIdle = cummCPUIdle === undefined? []: cummCPUIdle;
         this.cummWrongMoves = cummWrongMoves === undefined? []: cummWrongMoves;
+        this.CPUIO = CPUIO === undefined? []: CPUIO;
+        this.IDLE = IDLE === undefined? []: IDLE;
         this.moves = moves === undefined? []: moves;
     }
 
