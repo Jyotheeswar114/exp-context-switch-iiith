@@ -342,6 +342,12 @@ export class Kernel  {
                 total += (element.responce_time - e.time + 1);
             }
         }
+        for (let index = 0; index < this.events.length; index++) {
+            const element = this.events[index];
+            if(element.state === config.ACTIVE){
+                total += this.clock - element.time + 1;
+            }
+        }
         let avg =  total / n;
         return avg.toFixed(2);
     }
