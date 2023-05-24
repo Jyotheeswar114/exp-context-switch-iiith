@@ -269,13 +269,19 @@ export class Kernel  {
         // }
         // this.clock++;
         // console.log("Hello World");
-        if(this.isCPUIdle()) {
+        // console.log("procs", this.processes.length);
+        if(this.processes.length == 0 && this.isCPUIdle()){
+            this.IDLE.push(0.5)
+        }
+        else if(this.processes.length > 0 && this.isCPUIdle()) {
             this.IDLE.push(1);
             this.cpuIdle += 1;
         }
         else{
             this.IDLE.push(0);
         }
+        
+        
         if(this.isIOIdle()) {
             this.CPUIO.push(1);
         }

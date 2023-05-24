@@ -492,8 +492,8 @@ class UI {
               
               legendLabels.push({
                 text: "No move",
-                fillStyle: "rgb(228, 208, 10, 1)",
-                strokeStyle: "rgb(228, 208, 10, 1)",
+                fillStyle: "rgb(50,205,50,1)",
+                strokeStyle: "rgb(50,205,50,1)",
                 lineWidth: 2,
                 pointStyle: 'circle',
                 hidden: false,
@@ -510,11 +510,11 @@ class UI {
 
     // show blue color points for data values 1 and red points for value 0
     myChart.data.datasets[0].pointBackgroundColor = myChart.data.datasets[0].data.map(
-      (val) => (val === 1 ? "rgba(54, 162, 235, 1)" : (val === 0 ? "rgb(228, 208, 10, 1)" : "rgba(255, 99, 132, 1)"))
+      (val) => (val === 1 ? "rgba(54, 162, 235, 1)" : (val === 0 ? "rgb(50,205,50,1)" : "rgba(255, 99, 132, 1)"))
     );
     myChart.update();
     myChart.data.datasets[0].pointRadius = myChart.data.datasets[0].data.map(
-      (val) => (val === 1 ? 7 : (val === 0 ? 2 : 7))
+      (val) => (val === 1 ? 7 : (val === 0 ? 4 : 7))
     );
     myChart.update();
     content.appendChild(lineChart);
@@ -665,7 +665,7 @@ class UI {
 
     let title = document.createElement("h6");
     title.classList.add("mdl-dialog__title");
-    title.innerText = "Cumulative CPU Idle Time vs Clock Time";
+    title.innerText = "CPU Idle Time vs Clock Time";
     title.style.width = "100%";
     title.style.height = "50px";
     let content = document.createElement("div");
@@ -691,7 +691,7 @@ class UI {
         labels: Array.from(this.kernel.IDLE.keys()).map((val) => val + 1),
         datasets: [
           {
-            label: "Cumulative CPU Idle Time",
+            label: "CPU Idle Time",
             data: this.kernel.IDLE,
             backgroundColor: "rgba(0,0,0,0)",
             borderColor: "gray",
@@ -728,6 +728,15 @@ class UI {
                 pointStyle: 'circle',
                 hidden: false
               });
+
+              legendLabels.push({
+                text: "CPU Idle - No process",
+                fillStyle: "rgba(50,205,50,1)",
+                strokeStyle: "rgba(50,205,50,1)",
+                lineWidth: 2,
+                pointStyle: 'circle',
+                hidden: false
+              });
               return legendLabels;
             }
           },
@@ -739,7 +748,7 @@ class UI {
           callbacks: {
             label: function(tooltipItem, data) {
               var value = idle[tooltipItem.index];
-              return `Cumulative CPU Idle time : ` + (value);
+              return `CPU Idle time : ` + (value);
             }
           }
         },
@@ -748,11 +757,14 @@ class UI {
             ticks: {
               min: 0,
               max: 1,
-              stepSize: 1,
+              stepSize: 0.5,
               callback: function(value, index, values) {
                 if (value === 0) {
                   return "CPU Engaged";
-                } else if(value == 1)
+                } else if(value == 0.5)
+                {
+                  return "No process";
+                }else if(value == 1)
                 {
                   return "CPU Idle";
                 }
@@ -767,7 +779,7 @@ class UI {
     });
 
     myChart.data.datasets[0].pointBackgroundColor = myChart.data.datasets[0].data.map(
-      (val) => (val === 1 ? "rgba(54, 162, 235, 1)" : "rgba(255, 99, 132, 1)")
+      (val) => (val === 1 ? "rgba(54, 162, 235, 1)" : (val === 0.5 ? "rgba(50,205,50,1)" :"rgba(255, 99, 132, 1)"))
     );
     myChart.update();
     content.appendChild(lineChart);
@@ -804,7 +816,7 @@ class UI {
     // button.classList.add("mdl-js-button");
     // button.classList.add("mdl-button--raised");
     // button.classList.add("mdl-button--colored");
-    button.innerText = `Cumulative CPU Idle time: ${this.kernel.cpuIdle}     📊`;
+    button.innerText = `CPU Idle time: ${this.kernel.cpuIdle}     📊`;
     button.addEventListener("click", () => {
         this.pause_exp();
         dialog.showModal();
@@ -828,7 +840,7 @@ class UI {
 
     let title = document.createElement("h6");
     title.classList.add("mdl-dialog__title");
-    title.innerText = "Cumulative IO Idle Time vs Clock Time";
+    title.innerText = "IO Idle Time vs Clock Time";
     title.style.width = "100%";
     title.style.height = "50px";
     let content = document.createElement("div");
@@ -852,7 +864,7 @@ class UI {
         labels: Array.from(this.kernel.CPUIO.keys()).map((val) => val + 1),
         datasets: [
           {
-            label: "Cumulative IO Time",
+            label: "IO Idle Time",
             data: this.kernel.CPUIO,
             backgroundColor: "rgba(0,0,0,0)",
             borderColor: "gray",
@@ -861,17 +873,6 @@ class UI {
             steppedLine: true,
           },
         ],
-      },
-      tooltips: {
-        enabled: true,
-        mode: 'index',
-        intersect: false,
-        callbacks: {
-          label: function(tooltipItem, data) {
-            var value = io[tooltipItem.index];
-            return `Cumulative IO Idle time : ` + (value);
-          }
-        }
       },
       options: {
         responsive: false,
@@ -903,6 +904,17 @@ class UI {
               return legendLabels;
             }
           },
+        },
+        tooltips: {
+          enabled: true,
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: function(tooltipItem, data) {
+              var value = io[tooltipItem.index];
+              return `IO Idle time : ` + (value);
+            }
+          }
         },
         scales: {
           yAxes: [{
@@ -966,7 +978,7 @@ class UI {
     // button.classList.add("mdl-js-button");
     // button.classList.add("mdl-button--raised");
     // button.classList.add("mdl-button--colored");
-    button.innerText = `Cumulative IO Idle time: ${this.kernel.getCPUIOWaitTime()}      📊`;
+    button.innerText = `IO Idle time: ${this.kernel.getCPUIOWaitTime()}      📊`;
     button.addEventListener("click", () => {
         this.pause_exp();
         dialog.showModal();
